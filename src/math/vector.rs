@@ -4,6 +4,12 @@ use std::ops;
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Vector<T: Scalar, const N: usize>(pub [T; N]);
 
+impl<T: Scalar, const N: usize> Into<Vector<T, N>> for [T; N] {
+    fn into(self) -> Vector<T, N> {
+        Vector(self)
+    }
+}
+
 impl<T: Scalar, const N: usize> Vector<T, N> {
     pub const fn zero() -> Self {
         Vector([T::ZERO; N])

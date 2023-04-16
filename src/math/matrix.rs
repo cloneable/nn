@@ -4,6 +4,14 @@ use std::ops;
 #[derive(Clone, Debug, PartialEq)]
 pub struct Matrix<T: Scalar, const R: usize, const C: usize>(pub [[T; C]; R]);
 
+impl<T: Scalar, const R: usize, const C: usize> Into<Matrix<T, R, C>>
+    for [[T; C]; R]
+{
+    fn into(self) -> Matrix<T, R, C> {
+        Matrix(self)
+    }
+}
+
 impl<const R: usize, const C: usize, T: Scalar> Matrix<T, R, C> {
     pub const fn zero() -> Self {
         Matrix([[T::ZERO; C]; R])

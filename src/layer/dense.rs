@@ -1,6 +1,6 @@
 use crate::{
+    layer::Layer,
     math::{Matrix, Scalar, Vector},
-    Layer,
 };
 
 pub struct Dense<T: Scalar, const I: usize, const N: usize> {
