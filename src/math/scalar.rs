@@ -6,8 +6,13 @@ pub trait Scalar:
     + ops::Mul<Output = Self>
     + ops::MulAssign
     + Copy
+    + PartialEq
 {
     const ZERO: Self;
+}
+
+impl Scalar for i32 {
+    const ZERO: Self = 0;
 }
 
 impl Scalar for f32 {
