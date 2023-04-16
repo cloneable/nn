@@ -7,8 +7,17 @@ pub trait Scalar:
     + ops::MulAssign
     + Copy
     + PartialEq
+    + PartialOrd
 {
     const ZERO: Self;
+
+    fn max(self, other: Self) -> Self {
+        if self >= other {
+            self
+        } else {
+            other
+        }
+    }
 }
 
 impl Scalar for i32 {
