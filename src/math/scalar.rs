@@ -5,6 +5,7 @@ pub trait Scalar:
     + ops::AddAssign
     + ops::Mul<Output = Self>
     + ops::MulAssign
+    + ops::DivAssign
     + Copy
     + PartialEq
     + PartialOrd
@@ -18,8 +19,20 @@ pub trait Scalar:
             other
         }
     }
+
+    fn exp(self) -> Self;
+
+    fn abs(self) -> Self;
 }
 
 impl Scalar for f32 {
     const ZERO: Self = 0.0;
+
+    fn exp(self) -> Self {
+        f32::exp(self)
+    }
+
+    fn abs(self) -> Self {
+        f32::abs(self)
+    }
 }
