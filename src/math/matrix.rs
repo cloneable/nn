@@ -1,8 +1,14 @@
-use crate::math::{Scalar, Vector};
+use crate::math::{Scalar, Tensor, Vector};
 use std::ops;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Matrix<T: Scalar, const R: usize, const C: usize>(pub [[T; C]; R]);
+
+impl<T: Scalar, const R: usize, const C: usize> Tensor<2, T>
+    for Matrix<T, R, C>
+{
+    const SHAPE: [usize; 2] = [R, C];
+}
 
 impl<T: Scalar, const R: usize, const C: usize> Into<Matrix<T, R, C>>
     for [[T; C]; R]

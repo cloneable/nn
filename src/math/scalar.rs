@@ -1,7 +1,9 @@
+use crate::math::Tensor;
 use std::ops;
 
 pub trait Scalar:
-    ops::Add<Output = Self>
+    Tensor<0, Self>
+    + ops::Add<Output = Self>
     + ops::AddAssign
     + ops::Mul<Output = Self>
     + ops::MulAssign
@@ -23,6 +25,10 @@ pub trait Scalar:
     fn exp(self) -> Self;
 
     fn abs(self) -> Self;
+}
+
+impl<T: Scalar> Tensor<0, T> for T {
+    const SHAPE: [usize; 0] = [];
 }
 
 impl Scalar for f32 {

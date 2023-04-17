@@ -1,8 +1,12 @@
-use crate::math::Scalar;
+use crate::math::{Scalar, Tensor};
 use std::ops;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Vector<T: Scalar, const N: usize>(pub [T; N]);
+
+impl<T: Scalar, const N: usize> Tensor<1, T> for Vector<T, N> {
+    const SHAPE: [usize; 1] = [N];
+}
 
 impl<T: Scalar, const N: usize> Into<Vector<T, N>> for [T; N] {
     fn into(self) -> Vector<T, N> {
