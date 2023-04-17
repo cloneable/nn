@@ -35,13 +35,13 @@ mod tests {
     #[test]
     fn vector_zero() {
         let v = Vector::zero();
-        assert_eq!(Vector([0, 0, 0, 0]), v);
+        assert_eq!(Vector([0., 0., 0., 0.]), v);
     }
 
     #[test]
     fn vector_plus_vector() {
-        let a = Vector([1, 2, 3, 4]);
-        let b = Vector([4, 3, 2, 1]);
-        assert_eq!(Vector([5, 5, 5, 5]), a + b);
+        let a = Vector([1., 2., 3., 4.]);
+        let b = Vector([4., 3., 2., 1.]);
+        assert_eq!(Vector([5., 5., 5., 5.]), a + b);
     }
 }

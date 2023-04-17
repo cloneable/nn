@@ -28,13 +28,13 @@ mod tests {
 
     #[test]
     fn forward() {
-        let weights = Matrix([[1, 2, 3], [4, 5, 6]]);
-        let biases = Vector([1, -1]);
+        let weights = Matrix([[1., 2., 3.], [4., 5., 6.]]);
+        let biases = Vector([1., -1.]);
         let layer = Dense::new(weights, biases);
 
-        let inputs = Vector([4, 3, 2]);
+        let inputs = Vector([4., 3., 2.]);
         let outputs = layer.forward(&inputs);
 
-        assert_eq!(Vector([4 + 6 + 6 + 1, 16 + 15 + 12 - 1]), outputs);
+        assert_eq!(Vector([4. + 6. + 6. + 1., 16. + 15. + 12. - 1.]), outputs);
     }
 }

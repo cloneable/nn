@@ -67,26 +67,26 @@ mod tests {
     #[test]
     fn matrix_zero() {
         let m = Matrix::zero();
-        assert_eq!(Matrix([[0, 0, 0], [0, 0, 0]]), m);
+        assert_eq!(Matrix([[0., 0., 0.], [0., 0., 0.]]), m);
     }
 
     #[test]
     fn matrix_transpose() {
-        let m = Matrix([[1, 2, 3], [4, 5, 6]]);
-        assert_eq!(Matrix([[1, 4], [2, 5], [3, 6]]), m.transpose());
+        let m = Matrix([[1., 2., 3.], [4., 5., 6.]]);
+        assert_eq!(Matrix([[1., 4.], [2., 5.], [3., 6.]]), m.transpose());
     }
 
     #[test]
     fn matrix_dot_vector() {
-        let m = Matrix([[2, 2, 2], [3, 3, 3]]);
-        let v = Vector([1, 2, 3]);
-        assert_eq!(Vector([2 + 4 + 6, 3 + 6 + 9]), &m * &v);
+        let m = Matrix([[2., 2., 2.], [3., 3., 3.]]);
+        let v = Vector([1., 2., 3.]);
+        assert_eq!(Vector([2. + 4. + 6., 3. + 6. + 9.]), &m * &v);
     }
 
     #[test]
     fn matrix_mul_scalar() {
-        let m = Matrix([[1, 2, 3], [4, 5, 6]]);
-        let s = 3;
-        assert_eq!(Matrix([[3, 6, 9], [12, 15, 18]]), &m * s);
+        let m = Matrix([[1., 2., 3.], [4., 5., 6.]]);
+        let s = 3.;
+        assert_eq!(Matrix([[3., 6., 9.], [12., 15., 18.]]), &m * s);
     }
 }

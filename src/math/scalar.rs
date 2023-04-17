@@ -20,10 +20,6 @@ pub trait Scalar:
     }
 }
 
-impl Scalar for i32 {
-    const ZERO: Self = 0;
-}
-
 impl Scalar for f32 {
     const ZERO: Self = 0.0;
 }
