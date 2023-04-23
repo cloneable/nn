@@ -1,4 +1,5 @@
 use crate::math::Tensor;
+use rand::{distributions::Standard, Rng};
 use std::ops;
 
 pub trait Scalar:
@@ -33,6 +34,9 @@ pub trait Scalar:
 
     #[must_use]
     fn from_usize(v: usize) -> Self;
+
+    #[must_use]
+    fn random<RNG: Rng + ?Sized>(rng: &mut RNG) -> Self;
 }
 
 impl<S: Scalar> Tensor<0, S> for S {
@@ -63,5 +67,9 @@ impl Scalar for f32 {
     #[allow(clippy::cast_precision_loss)]
     fn from_usize(v: usize) -> Self {
         v as f32
+    }
+
+    fn random<RNG: Rng + ?Sized>(rng: &mut RNG) -> Self {
+        rng.sample(Standard)
     }
 }

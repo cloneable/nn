@@ -1,4 +1,5 @@
 use crate::math::{tensor::Tensor, Scalar, Vector};
+use rand::Rng;
 use std::ops;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -55,6 +56,14 @@ impl<const R: usize, const C: usize, S: Scalar> Matrix<R, C, S> {
                 c += 1;
             }
             r += 1;
+        }
+        m
+    }
+
+    pub fn random<RNG: Rng + ?Sized>(rng: &mut RNG) -> Self {
+        let mut m = Matrix::zero();
+        for r in 0..R {
+            m.0[r] = Vector::random(rng);
         }
         m
     }
@@ -129,6 +138,7 @@ impl<const R: usize, const C: usize, S: Scalar> ops::Add<&Vector<C, S>>
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rand::rngs::SmallRng;
 
     #[test]
     fn matrix_zero() {
@@ -189,5 +199,20 @@ mod tests {
         let m = Matrix::new([[1., 2., 3.], [4., 5., 6.]]);
         let v = Vector::new([2., 2., 2.]);
         assert_eq!(Matrix::new([[3., 4., 5.], [6., 7., 8.]]), &m + &v);
+    }
+
+    #[test]
+    fn matrix_rand_smoketest() {
+        use rand::SeedableRng;
+
+        let mut rng = SmallRng::seed_from_u64(42);
+        let m = Matrix::random(&mut rng);
+        assert_eq!(
+            Matrix::new([
+                [0.15935862, 0.3042457, 0.29556495],
+                [0.72855777, 0.53926784, 0.15103698]
+            ]),
+            m
+        );
     }
 }

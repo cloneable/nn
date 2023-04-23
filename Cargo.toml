@@ -3,6 +3,9 @@ name = "nn"
 version = "0.0.0"
 edition = "2021"
 
+[dependencies]
+rand = { version = "0.8.5", features = ["small_rng"] }
+
 [profile.release]
 opt-level = 3
 codegen-units = 1

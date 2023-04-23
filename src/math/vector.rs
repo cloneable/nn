@@ -1,4 +1,5 @@
 use crate::math::{Scalar, Tensor};
+use rand::Rng;
 use std::ops;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -95,6 +96,14 @@ impl<const N: usize, S: Scalar> Vector<N, S> {
             };
         }
         self
+    }
+
+    pub fn random<RNG: Rng + ?Sized>(rng: &mut RNG) -> Self {
+        let mut v = Vector::zero();
+        for n in 0..N {
+            v.0[n] = S::random(rng);
+        }
+        v
     }
 }
 
