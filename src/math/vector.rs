@@ -5,10 +5,6 @@ use std::ops;
 pub struct Vector<const N: usize, S: Scalar = f32>(pub [S; N]);
 
 impl<const N: usize, S: Scalar> Tensor<1, S> for Vector<N, S> {
-    fn zero() -> Self {
-        Vector([S::zero(); N])
-    }
-
     fn shape(&self) -> [usize; 1] {
         [N]
     }
@@ -25,12 +21,20 @@ impl<const N: usize, S: Scalar> Tensor<1, S> for Vector<N, S> {
 }
 
 impl<const N: usize, S: Scalar> From<[S; N]> for Vector<N, S> {
-    fn from(v: [S; N]) -> Vector<N, S> {
-        Vector(v)
+    fn from(v: [S; N]) -> Self {
+        Vector::new(v)
     }
 }
 
 impl<const N: usize, S: Scalar> Vector<N, S> {
+    pub const fn new(v: [S; N]) -> Self {
+        Vector(v)
+    }
+
+    pub const fn zero() -> Self {
+        Vector([S::ZERO; N])
+    }
+
     #[must_use]
     pub fn exp(mut self) -> Self {
         for n in &mut self.0 {

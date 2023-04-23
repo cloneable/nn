@@ -36,10 +36,6 @@ pub trait Scalar:
 }
 
 impl<S: Scalar> Tensor<0, S> for S {
-    fn zero() -> Self {
-        S::ZERO
-    }
-
     fn shape(&self) -> [usize; 0] {
         []
     }

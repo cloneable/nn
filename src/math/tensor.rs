@@ -2,7 +2,6 @@ use crate::math::Scalar;
 use std::fmt::Debug;
 
 pub trait Tensor<const RANK: usize, S: Scalar = f32>: Debug {
-    fn zero() -> Self;
     fn shape(&self) -> [usize; RANK];
     fn get(&self, indices: [usize; RANK]) -> S;
     fn set(&mut self, indices: [usize; RANK], value: S);
@@ -21,10 +20,6 @@ pub struct Tensor3<
 impl<S: Scalar, const A: usize, const B: usize, const C: usize> Tensor<3, S>
     for Tensor3<A, B, C, S>
 {
-    fn zero() -> Self {
-        Tensor3([[[S::ZERO; C]; B]; A])
-    }
-
     fn shape(&self) -> [usize; 3] {
         [A, B, C]
     }

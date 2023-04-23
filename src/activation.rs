@@ -1,26 +1,50 @@
-use crate::math::{Scalar, Tensor, Vector};
+use crate::math::{Matrix, Scalar};
 
-pub trait ActivationFn<const N: usize, S: Scalar = f32> {
-    fn apply(&self, inputs: &Vector<N, S>) -> Vector<N, S>;
+pub trait ActivationFn<
+    const SAMPLES: usize,
+    const OUTPUTS: usize,
+    S: Scalar = f32,
+>
+{
+    fn apply(
+        &self,
+        outputs: &Matrix<SAMPLES, OUTPUTS, S>,
+    ) -> Matrix<SAMPLES, OUTPUTS, S>;
 }
 
 pub struct ReLU;
 
-impl<const N: usize, S: Scalar> ActivationFn<N, S> for ReLU {
-    fn apply(&self, inputs: &Vector<N, S>) -> Vector<N, S> {
-        let mut outputs = Vector::zero();
-        for n in 0..N {
-            outputs.0[n] = S::max(S::ZERO, inputs.0[n]);
+impl<const SAMPLES: usize, const OUTPUTS: usize, S: Scalar>
+    ActivationFn<SAMPLES, OUTPUTS, S> for ReLU
+{
+    fn apply(
+        &self,
+        outputs: &Matrix<SAMPLES, OUTPUTS, S>,
+    ) -> Matrix<SAMPLES, OUTPUTS, S> {
+        let mut m = Matrix::zero();
+        for s in 0..SAMPLES {
+            for o in 0..OUTPUTS {
+                m.0[s].0[o] = S::max(S::ZERO, outputs.0[s].0[o]);
+            }
         }
-        outputs
+        m
     }
 }
 
 pub struct Softmax;
 
-impl<const N: usize, S: Scalar> ActivationFn<N, S> for Softmax {
-    fn apply(&self, inputs: &Vector<N, S>) -> Vector<N, S> {
-        inputs.exp().norm()
+impl<const SAMPLES: usize, const OUTPUTS: usize, S: Scalar>
+    ActivationFn<SAMPLES, OUTPUTS, S> for Softmax
+{
+    fn apply(
+        &self,
+        outputs: &Matrix<SAMPLES, OUTPUTS, S>,
+    ) -> Matrix<SAMPLES, OUTPUTS, S> {
+        let mut m = Matrix::zero();
+        for s in 0..SAMPLES {
+            m.0[s] = outputs.0[s].exp().norm();
+        }
+        m
     }
 }
 
@@ -30,15 +54,15 @@ mod tests {
 
     #[test]
     fn relu() {
-        let inputs = [0.0, 0.2, -0.2].into();
-        assert_eq!(Vector([0.0, 0.2, 0.0]), ReLU.apply(&inputs));
+        let inputs = [[0.0, 0.2, -0.2]].into();
+        assert_eq!(Matrix::new([[0.0, 0.2, 0.0]]), ReLU.apply(&inputs));
     }
 
     #[test]
     fn softmax() {
-        let inputs = [2., 4., 1.].into();
+        let inputs = [[2., 4., 1.]].into();
         assert_eq!(
-            Vector([0.1141952, 0.8437947, 0.042010065]),
+            Matrix::new([[0.1141952, 0.8437947, 0.042010065]]),
             Softmax.apply(&inputs)
         );
     }

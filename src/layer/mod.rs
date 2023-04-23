@@ -1,9 +1,17 @@
 mod dense;
 
+use crate::math::{Matrix, Scalar};
 pub use dense::Dense;
 
-use crate::math::{Scalar, Vector};
-
-pub trait Layer<const I: usize, const O: usize, S: Scalar = f32> {
-    fn forward(&self, inputs: &Vector<I, S>) -> Vector<O, S>;
+pub trait Layer<
+    const SAMPLES: usize,
+    const INPUTS: usize,
+    const OUTPUTS: usize,
+    S: Scalar = f32,
+>
+{
+    fn forward(
+        &self,
+        inputs: &Matrix<SAMPLES, INPUTS, S>,
+    ) -> Matrix<SAMPLES, OUTPUTS, S>;
 }
