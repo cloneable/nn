@@ -1,4 +1,7 @@
-use nn::layer::{Dense, Layer};
+use nn::{
+    activation::{ActivationFn, ReLU, Softmax},
+    layer::{Dense, Layer},
+};
 
 fn main() {
     let layer1 = Dense::new(
@@ -9,7 +12,9 @@ fn main() {
 
     let inputs = [1.1, 2.2, 3.3].into();
     let outputs = layer1.forward(&inputs);
+    let outputs = ReLU.apply(&outputs);
     let outputs = layer2.forward(&outputs);
+    let outputs = Softmax.apply(&outputs);
 
     println!("{outputs:?}");
 }
