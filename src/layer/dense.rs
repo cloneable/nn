@@ -3,21 +3,21 @@ use crate::{
     math::{Matrix, Scalar, Vector},
 };
 
-pub struct Dense<T: Scalar, const I: usize, const N: usize> {
-    biases: Vector<T, N>,
-    weights: Matrix<T, N, I>,
+pub struct Dense<const I: usize, const N: usize, S: Scalar = f32> {
+    biases: Vector<N, S>,
+    weights: Matrix<N, I, S>,
 }
 
-impl<T: Scalar, const I: usize, const N: usize> Dense<T, I, N> {
-    pub fn new(weights: Matrix<T, N, I>, biases: Vector<T, N>) -> Self {
+impl<const I: usize, const N: usize, S: Scalar> Dense<I, N, S> {
+    pub const fn new(weights: Matrix<N, I, S>, biases: Vector<N, S>) -> Self {
         Dense { biases, weights }
     }
 }
 
-impl<T: Scalar, const I: usize, const N: usize> Layer<T, I, N>
-    for Dense<T, I, N>
+impl<const I: usize, const N: usize, S: Scalar> Layer<I, N, S>
+    for Dense<I, N, S>
 {
-    fn forward(&self, inputs: &Vector<T, I>) -> Vector<T, N> {
+    fn forward(&self, inputs: &Vector<I, S>) -> Vector<N, S> {
         &self.weights * inputs + self.biases
     }
 }

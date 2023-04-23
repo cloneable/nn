@@ -1,24 +1,37 @@
 use crate::math::{Scalar, Tensor};
 use std::ops;
 
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub struct Vector<T: Scalar, const N: usize>(pub [T; N]);
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub struct Vector<const N: usize, S: Scalar = f32>(pub [S; N]);
 
-impl<T: Scalar, const N: usize> Tensor<1, T> for Vector<T, N> {
-    const SHAPE: [usize; 1] = [N];
-}
+impl<const N: usize, S: Scalar> Tensor<1, S> for Vector<N, S> {
+    fn zero() -> Self {
+        Vector([S::zero(); N])
+    }
 
-impl<T: Scalar, const N: usize> Into<Vector<T, N>> for [T; N] {
-    fn into(self) -> Vector<T, N> {
-        Vector(self)
+    fn shape(&self) -> [usize; 1] {
+        [N]
+    }
+
+    fn get(&self, indices: [usize; 1]) -> S {
+        debug_assert!(indices[0] < N);
+        self.0[indices[0]]
+    }
+
+    fn set(&mut self, indices: [usize; 1], value: S) {
+        debug_assert!(indices[0] < N);
+        self.0[indices[0]] = value;
     }
 }
 
-impl<T: Scalar, const N: usize> Vector<T, N> {
-    pub const fn zero() -> Self {
-        Vector([T::ZERO; N])
+impl<const N: usize, S: Scalar> From<[S; N]> for Vector<N, S> {
+    fn from(v: [S; N]) -> Vector<N, S> {
+        Vector(v)
     }
+}
 
+impl<const N: usize, S: Scalar> Vector<N, S> {
+    #[must_use]
     pub fn exp(mut self) -> Self {
         for n in &mut self.0 {
             *n = n.exp();
@@ -26,6 +39,7 @@ impl<T: Scalar, const N: usize> Vector<T, N> {
         self
     }
 
+    #[must_use]
     pub fn abs(mut self) -> Self {
         for n in &mut self.0 {
             *n = n.abs();
@@ -33,18 +47,20 @@ impl<T: Scalar, const N: usize> Vector<T, N> {
         self
     }
 
-    pub fn sum(&self) -> T {
-        let mut sum = T::ZERO;
+    #[must_use]
+    pub fn sum(&self) -> S {
+        let mut sum = S::ZERO;
         for n in self.0 {
             sum += n;
         }
         sum
     }
 
+    #[must_use]
     pub fn norm(mut self) -> Self {
         // TODO: opt: normalize without abs and 0 check.
         let sum = self.abs().sum();
-        if sum == T::ZERO {
+        if sum == S::ZERO {
             return self;
         }
         for n in 0..N {
@@ -54,11 +70,11 @@ impl<T: Scalar, const N: usize> Vector<T, N> {
     }
 }
 
-impl<T: Scalar, const N: usize> ops::Add for Vector<T, N> {
-    type Output = Vector<T, N>;
+impl<const N: usize, S: Scalar> ops::Add for Vector<N, S> {
+    type Output = Vector<N, S>;
 
-    fn add(self, rhs: Vector<T, N>) -> Self::Output {
-        let mut v = self.clone();
+    fn add(self, rhs: Vector<N, S>) -> Self::Output {
+        let mut v = self;
         for n in 0..N {
             v.0[n] += rhs.0[n];
         }

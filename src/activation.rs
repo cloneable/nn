@@ -1,16 +1,16 @@
-use crate::math::{Scalar, Vector};
+use crate::math::{Scalar, Tensor, Vector};
 
-pub trait ActivationFn<T: Scalar, const N: usize> {
-    fn apply(&self, inputs: &Vector<T, N>) -> Vector<T, N>;
+pub trait ActivationFn<const N: usize, S: Scalar = f32> {
+    fn apply(&self, inputs: &Vector<N, S>) -> Vector<N, S>;
 }
 
 pub struct ReLU;
 
-impl<T: Scalar, const N: usize> ActivationFn<T, N> for ReLU {
-    fn apply(&self, inputs: &Vector<T, N>) -> Vector<T, N> {
-        let mut outputs = inputs.clone();
+impl<const N: usize, S: Scalar> ActivationFn<N, S> for ReLU {
+    fn apply(&self, inputs: &Vector<N, S>) -> Vector<N, S> {
+        let mut outputs = Vector::zero();
         for n in 0..N {
-            outputs.0[n] = T::max(T::ZERO, outputs.0[n]);
+            outputs.0[n] = S::max(S::ZERO, inputs.0[n]);
         }
         outputs
     }
@@ -18,9 +18,9 @@ impl<T: Scalar, const N: usize> ActivationFn<T, N> for ReLU {
 
 pub struct Softmax;
 
-impl<T: Scalar, const N: usize> ActivationFn<T, N> for Softmax {
-    fn apply(&self, inputs: &Vector<T, N>) -> Vector<T, N> {
-        inputs.clone().exp().norm()
+impl<const N: usize, S: Scalar> ActivationFn<N, S> for Softmax {
+    fn apply(&self, inputs: &Vector<N, S>) -> Vector<N, S> {
+        inputs.exp().norm()
     }
 }
 

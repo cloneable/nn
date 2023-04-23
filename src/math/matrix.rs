@@ -1,29 +1,41 @@
-use crate::math::{Scalar, Tensor, Vector};
+use crate::math::{tensor::Tensor, Scalar, Vector};
 use std::ops;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct Matrix<T: Scalar, const R: usize, const C: usize>(pub [[T; C]; R]);
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Matrix<const R: usize, const C: usize, S: Scalar = f32>(
+    pub [[S; C]; R],
+);
 
-impl<T: Scalar, const R: usize, const C: usize> Tensor<2, T>
-    for Matrix<T, R, C>
+impl<const R: usize, const C: usize, S: Scalar> Tensor<2, S>
+    for Matrix<R, C, S>
 {
-    const SHAPE: [usize; 2] = [R, C];
-}
+    fn zero() -> Self {
+        Matrix([[S::ZERO; C]; R])
+    }
 
-impl<T: Scalar, const R: usize, const C: usize> Into<Matrix<T, R, C>>
-    for [[T; C]; R]
-{
-    fn into(self) -> Matrix<T, R, C> {
-        Matrix(self)
+    fn shape(&self) -> [usize; 2] {
+        [R, C]
+    }
+
+    fn get(&self, indices: [usize; 2]) -> S {
+        self.0[indices[0]][indices[1]]
+    }
+
+    fn set(&mut self, indices: [usize; 2], value: S) {
+        self.0[indices[0]][indices[1]] = value;
     }
 }
 
-impl<const R: usize, const C: usize, T: Scalar> Matrix<T, R, C> {
-    pub const fn zero() -> Self {
-        Matrix([[T::ZERO; C]; R])
+impl<const R: usize, const C: usize, S: Scalar> From<[[S; C]; R]>
+    for Matrix<R, C, S>
+{
+    fn from(v: [[S; C]; R]) -> Matrix<R, C, S> {
+        Matrix(v)
     }
+}
 
-    pub fn transpose(&self) -> Matrix<T, C, R> {
+impl<const R: usize, const C: usize, S: Scalar> Matrix<R, C, S> {
+    pub fn transpose(&self) -> Matrix<C, R, S> {
         let mut m = Matrix::zero();
         for r in 0..R {
             for c in 0..C {
@@ -34,12 +46,32 @@ impl<const R: usize, const C: usize, T: Scalar> Matrix<T, R, C> {
     }
 }
 
-impl<const R: usize, const C: usize, T: Scalar> ops::Mul<&Vector<T, C>>
-    for &Matrix<T, R, C>
+impl<const R1C0: usize, const R0: usize, const C1: usize, S: Scalar>
+    ops::Mul<&Matrix<R1C0, C1, S>> for &Matrix<R0, R1C0, S>
 {
-    type Output = Vector<T, R>;
+    type Output = Matrix<R0, C1, S>;
 
-    fn mul(self, rhs: &Vector<T, C>) -> Self::Output {
+    fn mul(self, rhs: &Matrix<R1C0, C1, S>) -> Self::Output {
+        let mut m = Matrix::zero();
+        for r in 0..R0 {
+            for c in 0..C1 {
+                let mut sum = S::zero();
+                for rc in 0..R1C0 {
+                    sum += self.0[r][rc] * rhs.0[rc][c];
+                }
+                m.0[r][c] = sum;
+            }
+        }
+        m
+    }
+}
+
+impl<const R: usize, const C: usize, S: Scalar> ops::Mul<&Vector<C, S>>
+    for &Matrix<R, C, S>
+{
+    type Output = Vector<R, S>;
+
+    fn mul(self, rhs: &Vector<C, S>) -> Self::Output {
         let mut v = Vector::zero();
         for r in 0..R {
             for c in 0..C {
@@ -50,12 +82,12 @@ impl<const R: usize, const C: usize, T: Scalar> ops::Mul<&Vector<T, C>>
     }
 }
 
-impl<const R: usize, const C: usize, T: Scalar> ops::Mul<T>
-    for &Matrix<T, R, C>
+impl<const R: usize, const C: usize, S: Scalar> ops::Mul<S>
+    for &Matrix<R, C, S>
 {
-    type Output = Matrix<T, R, C>;
+    type Output = Matrix<R, C, S>;
 
-    fn mul(self, rhs: T) -> Self::Output {
+    fn mul(self, rhs: S) -> Self::Output {
         let mut m = self.clone();
         for r in 0..R {
             for c in 0..C {
@@ -83,7 +115,29 @@ mod tests {
     }
 
     #[test]
-    fn matrix_dot_vector() {
+    fn matrix_mul_matrix() {
+        let m1 = Matrix([[3., 3., 3., 3.], [4., 4., 4., 4.]]);
+        let m2 = Matrix([[2., 2.], [3., 3.], [4., 4.], [5., 5.]]);
+        let m3 = &m1 * &m2;
+        let m4 = &m2 * &m1;
+
+        assert_eq!(
+            Matrix([[3. * 2. + 3. * 3. + 3. * 4. + 3. * 5., 42.], [56., 56.]]),
+            m3
+        );
+        assert_eq!(
+            Matrix([
+                [14., 14., 14., 14.],
+                [21., 21., 21., 21.],
+                [28., 28., 28., 28.],
+                [35., 35., 35., 35.]
+            ]),
+            m4
+        );
+    }
+
+    #[test]
+    fn matrix_mul_vector() {
         let m = Matrix([[2., 2., 2.], [3., 3., 3.]]);
         let v = Vector([1., 2., 3.]);
         assert_eq!(Vector([2. + 4. + 6., 3. + 6. + 9.]), &m * &v);

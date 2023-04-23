@@ -7,13 +7,16 @@ pub trait Scalar:
     + ops::AddAssign
     + ops::Mul<Output = Self>
     + ops::MulAssign
+    + ops::Div<Output = Self>
     + ops::DivAssign
     + Copy
     + PartialEq
     + PartialOrd
+    + Default
 {
     const ZERO: Self;
 
+    #[must_use]
     fn max(self, other: Self) -> Self {
         if self >= other {
             self
@@ -22,13 +25,29 @@ pub trait Scalar:
         }
     }
 
+    #[must_use]
     fn exp(self) -> Self;
 
+    #[must_use]
     fn abs(self) -> Self;
 }
 
-impl<T: Scalar> Tensor<0, T> for T {
-    const SHAPE: [usize; 0] = [];
+impl<S: Scalar> Tensor<0, S> for S {
+    fn zero() -> Self {
+        S::ZERO
+    }
+
+    fn shape(&self) -> [usize; 0] {
+        []
+    }
+
+    fn get(&self, _indices: [usize; 0]) -> S {
+        *self
+    }
+
+    fn set(&mut self, _indices: [usize; 0], value: S) {
+        *self = value;
+    }
 }
 
 impl Scalar for f32 {
