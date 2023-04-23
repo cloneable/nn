@@ -68,6 +68,30 @@ impl<const N: usize, S: Scalar> Vector<N, S> {
         }
         self
     }
+
+    #[must_use]
+    pub fn mean(&self) -> S {
+        if N == 0 {
+            S::ZERO
+        } else {
+            self.sum() / S::from_usize(N)
+        }
+    }
+
+    #[must_use]
+    pub fn clip(mut self, min: S, max: S) -> Self {
+        debug_assert!(min <= max);
+        for n in &mut self.0 {
+            *n = if *n < min {
+                min
+            } else if *n > max {
+                max
+            } else {
+                *n
+            };
+        }
+        self
+    }
 }
 
 impl<const N: usize, S: Scalar> ops::Add for Vector<N, S> {

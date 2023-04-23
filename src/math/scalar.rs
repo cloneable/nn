@@ -30,6 +30,9 @@ pub trait Scalar:
 
     #[must_use]
     fn abs(self) -> Self;
+
+    #[must_use]
+    fn from_usize(v: usize) -> Self;
 }
 
 impl<S: Scalar> Tensor<0, S> for S {
@@ -59,5 +62,10 @@ impl Scalar for f32 {
 
     fn abs(self) -> Self {
         f32::abs(self)
+    }
+
+    #[allow(clippy::cast_precision_loss)]
+    fn from_usize(v: usize) -> Self {
+        v as f32
     }
 }
